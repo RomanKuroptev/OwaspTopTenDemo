@@ -1,0 +1,44 @@
+@page "/sql-injection"
+@attribute [Authorize]
+@inject HttpClient Http
+@inject ILogger<SqlInjection> Logger
+
+<h3>SQL Injection Demo</h3>
+<input @bind="userInput" placeholder="Enter input" />
+<button @onclick="SubmitVulnerable">Submit Vulnerable</button>
+<button @onclick="SubmitSecure">Submit Secure</button>
+
+<p>@response</p>
+
+@code {
+    private string userInput;
+    private string response;
+
+    private async Task SubmitVulnerable()
+    {
+        Logger.LogInformation("SubmitVulnerable called with input: {UserInput}", userInput);
+        try
+        {
+            response = await Http.GetStringAsync($"/users/vulnerable-sql?userInput={userInput}");
+        }
+        catch (HttpRequestException ex)
+        {
+            response = $"Error: {ex.Message}";
+            Logger.LogError(ex, "Error in SubmitVulnerable");
+        }
+    }
+
+    private async Task SubmitSecure()
+    {
+        Logger.LogInformation("SubmitSecure called with input: {UserInput}", userInput);
+        try
+        {
+            response = await Http.GetStringAsync($"/users/secure-sql?userInput={userInput}");
+        }
+        catch (HttpRequestException ex)
+        {
+            response = $"Error: {ex.Message}";
+            Logger.LogError(ex, "Error in SubmitSecure");
+        }
+    }
+}

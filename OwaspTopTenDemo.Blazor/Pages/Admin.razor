@@ -1,0 +1,42 @@
+﻿@page "/admin"
+@attribute [Authorize]
+@inject HttpClient Http
+@inject ILogger<Admin> Logger
+
+<h3>Admin Data Access Demo</h3>
+<button @onclick="FetchVulnerableAdminData">Fetch Vulnerable Admin Data</button>
+<button @onclick="FetchSecureAdminData">Fetch Secure Admin Data</button>
+
+<p>@response</p>
+
+@code {
+    private string response;
+
+    private async Task FetchVulnerableAdminData()
+    {
+        Logger.LogInformation("FetchVulnerableAdminData called");
+        try
+        {
+            response = await Http.GetStringAsync("/users/vulnerable-admin");
+        }
+        catch (HttpRequestException ex)
+        {
+            response = $"Error: {ex.Message}";
+            Logger.LogError(ex, "Error in FetchVulnerableAdminData");
+        }
+    }
+
+    private async Task FetchSecureAdminData()
+    {
+        Logger.LogInformation("FetchSecureAdminData called");
+        try
+        {
+            response = await Http.GetStringAsync("/users/secure-admin");
+        }
+        catch (HttpRequestException ex)
+        {
+            response = $"Error: {ex.Message}";
+            Logger.LogError(ex, "Error in FetchSecureAdminData");
+        }
+    }
+}

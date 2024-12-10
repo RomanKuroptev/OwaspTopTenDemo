@@ -1,0 +1,44 @@
+﻿@page "/xss"
+@attribute [Authorize]
+@inject HttpClient Http
+@inject ILogger<XSS> Logger
+
+<h3>XSS Demo</h3>
+<input @bind="userInput" placeholder="Enter input" />
+<button @onclick="SubmitVulnerableXss">Submit Vulnerable</button>
+<button @onclick="SubmitSecureXss">Submit Secure</button>
+
+<p>@((MarkupString)response)</p>
+
+@code {
+    private string userInput;
+    private string response;
+
+    private async Task SubmitVulnerableXss()
+    {
+        Logger.LogInformation("SubmitVulnerableXss called with input: {UserInput}", userInput);
+        try
+        {
+            response = await Http.GetStringAsync($"/users/vulnerable-xss?userInput={userInput}");
+        }
+        catch (HttpRequestException ex)
+        {
+            response = $"Error: {ex.Message}";
+            Logger.LogError(ex, "Error in SubmitVulnerableXss");
+        }
+    }
+
+    private async Task SubmitSecureXss()
+    {
+        Logger.LogInformation("SubmitSecureXss called with input: {UserInput}", userInput);
+        try
+        {
+            response = await Http.GetStringAsync($"/users/secure-xss?userInput={userInput}");
+        }
+        catch (HttpRequestException ex)
+        {
+            response = $"Error: {ex.Message}";
+            Logger.LogError(ex, "Error in SubmitSecureXss");
+        }
+    }
+}

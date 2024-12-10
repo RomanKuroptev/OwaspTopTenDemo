@@ -1,0 +1,23 @@
+﻿@page "/logout"
+@using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage
+@using OwaspTopTenDemo.Blazor.Services
+@inject AuthenticationStateProvider AuthStateProvider
+@inject ProtectedLocalStorage LocalStorage
+@inject NavigationManager Navigation
+
+@code {
+    protected override async Task OnInitializedAsync()
+    {
+        // Notify the authentication state provider
+        if (AuthStateProvider is CustomAuthStateProvider customAuthStateProvider)
+        {
+            customAuthStateProvider.NotifyUserLogout();
+        }
+
+        // Clear the token from local storage
+        await LocalStorage.DeleteAsync("authToken");
+
+        // Navigate to the login page
+        Navigation.NavigateTo("/login");
+    }
+}

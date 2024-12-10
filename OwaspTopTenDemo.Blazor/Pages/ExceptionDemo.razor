@@ -1,0 +1,38 @@
+﻿ 
+   @page "/exception-demo"
+   @inject HttpClient Http
+   @inject ILogger<ExceptionDemo> Logger
+
+<h3>Exception Demo</h3>
+<button @onclick="TriggerException">Trigger Exception</button>
+
+
+
+@code {
+    private string ErrorMessage;
+
+    private async Task TriggerException()
+    {
+        try
+        {
+
+            await Http.GetStringAsync("api/ExceptionDemo/throw");
+        }
+        catch (Exception ex)
+        {
+            // Capture the error message
+            ErrorMessage = ex.Message;
+        }
+    }
+   }
+
+
+<h3>Error Demo</h3>
+@if (ErrorMessage == null)
+{
+    <p>No error occurred yet. Try reloading the page.</p>
+}
+else
+{
+    <p style="color: red;">Error occurred: @ErrorMessage</p>
+}
